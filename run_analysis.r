@@ -6,6 +6,11 @@
 ##5)From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
 
+library(dplyr);
+library(plyr);
+library(tidyr);
+library(readr);
+
 ##1-Read Files
 read.table("UCI HAR dataset/activity_labels.txt") -> ActivityLabels;
 read.table("UCI HAR dataset/features.txt") -> Features;
@@ -67,7 +72,7 @@ MeanStdDevFeatures <- grepl("mean\\(\\)|std\\(\\)", Features[,2]);
 xTrain[,MeanStdDevFeatures] -> MeanStdDevXTrain;
 xTest[,MeanStdDevFeatures] -> MeanStdDevXTest;
 
-##2.5Transform (Parse Data): Combine Subject, Activity & Feature Attributes as a Training Dataset & Test Dataset respectively.
+##2.5Transform (Bind DataSet Columns): Combine Subject, Activity & Feature Attributes as a Training Dataset & Test Dataset respectively.
 TrainingSet<-cbind(SubjectTrain,yTrain2,MeanStdDevXTrain);
 TestSet<-cbind(SubjectTest,yTest2,MeanStdDevXTest);
 
@@ -87,6 +92,40 @@ dim(yTest2);
 dim(MeanStdDevXTest);
 dim(TestSet);
 
-##4-Transform (Parse Data): Combine both Training Dataset & Test Dataset into a dataset for Analysis.
-AnalysisSet<-rbind(TrainingSet,TestSet);
+##4-Transform (Bind DataSet Rows): Combine both Training Dataset & Test Dataset into a dataset for Analysis.
+DataSet<-rbind(TrainingSet,TestSet);
+
+##5-Extract Metadata
+as.data.frame(names(DataSet));
+summary(DataSet);
+write.table(DataSet, "DataSet.txt") # write out DataSet;
+
+##Optional: Melt - Another option to gather()
+##variables <- names(DataSet)[grep("^[t|f]",names(DataSet))]
+##identifier <- names(DataSet)[grep("[Id|Label]$",names(DataSet))]
+##MeltedDataSet<-melt(DataSet,id=identifier,measure.var=variables)
+
+##6-Melts the Measure Variables into a Tall & Slim DataSet.
+GatherDataSet<-gather(DataSet, Variable, Value, -(SubjectId:ActivityLabel));
+TallDataSet1<-ddply(GatherDataSet, .(SubjectId,ActivityId,ActivityLabel,Variable), summarise, Average=mean(Value));
+
+##7-Create 3 New Columns: Feature, FeatureStatistics, FeatureAxial 
+##Method: Clean the values of the column Variable (..., which are actually the Melted Column Names from gather()) and perform "text-to-column" by non-alphanumeric seperator.
+separate(data=TallDataSet1, col=Variable, into = c("Feature","FeatureStatistics","FeatureAxial"), remove=FALSE) -> TallDataSet2;
+
+##8-Create 3 New Columns: FeatureDomain, FeatureType & FeatureMeasure.
+##Method: Mutate the above column names and specifying substitude values that matches the regular expression.
+mutate(TallDataSet2,FeatureDomain=gsub("[^t|f]|[A-SU-Za-su-z]+[t|T][A-SU-Za-su-z]+","",Feature),FeatureType=gsub("[A-Za-z]+(Body|Gravity)[A-Za-z]+","\\1", perl = TRUE,Feature),FeatureMeasure=gsub("[A-Za-z]+(Acc|AccJerk|Gyro|GyroJerk|AccMag|AccJerkMag|GyroMag|
+
+GyroJerkMag)","\\1", perl = TRUE,Feature)) -> TallDataSet3;
+mutate(TallDataSet3, Feature = as.factor(Feature), FeatureStatistics = as.factor(FeatureStatistics), FeatureAxial = as.factor(FeatureAxial), FeatureDomain = as.factor(FeatureDomain), FeatureType = as.factor(FeatureType), FeatureMeasure = as.factor(FeatureMeasure)) ->TallDataSet4;
+
+##9-Create 2 New Columns:mean, std by spreading the values in column FeatureStatistics.
+##Method: spread()
+select(TallDataSet4,SubjectId,ActivityId,ActivityLabel,FeatureDomain,FeatureType,FeatureMeasure,FeatureAxial,FeatureStatistics,Average) %>% spread(FeatureStatistics,Average, fill=0) %>% ddply(.
+
+(SubjectId,ActivityId,ActivityLabel,FeatureDomain,FeatureType,FeatureMeasure,FeatureAxial), summarise, AverageMean=mean(mean), AverageStandardDeviation=mean(std)) -> TidyData
+
+##10-write out TidyData
+write.table(TidyData, "TidyData.txt") ;
 

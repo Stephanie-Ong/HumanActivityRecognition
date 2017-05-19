@@ -1,21 +1,21 @@
-Codebook
-Variable list and descriptions
+##Codebook
+##Variable list and descriptions
 
-Variables of Tidy Data (TidyData)
-Variable name			Description
-------------------------------------------------------------------------------------------------------------------------------------------
-SubjectId				The Identifier of the Subject who performed the activity. Its range is from 1 to 30.
-ActivityId 			The Identifier of the Activity. eg. 1,2,3,4,5,6
-ActivityLabel 			The Activity Name that is unique to the ActivityId. eg. WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING,  LAYING 
-FeatureDomain			eg. t = Time, f = Frequency
-FeatureType			eg. Gravity, Body
-FeatureMeasure			eg. Acc, Gyro, AccJerk, GyroJerk, AccMag, GyroMag, AccJerkMag, GyroJerkMag
-FeatureAxial			eg. X,Y,Z,""
-AverageMean			The Mean Value of a Feature in the specific Domain, Axial and Measure.
-AverageStandardDeviation		The Standard Deviation of a Feature in the specific Domain, Axial and Measure.
+##Variables of Tidy Data (TidyData)
+##Variable name			Description
+##----------------------------------------------------------------------------------------------------------------------------------------
+##SubjectId				The Identifier of the Subject who performed the activity. Its range is from 1 to 30.
+##ActivityId 			The Identifier of the Activity. eg. 1,2,3,4,5,6
+##ActivityLabel 			The Activity Name that is unique to the ActivityId. eg. WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING,  LAYING 
+##FeatureDomain			eg. t = Time, f = Frequency
+##FeatureType			eg. Gravity, Body
+##FeatureMeasure			eg. Acc, Gyro, AccJerk, GyroJerk, AccMag, GyroMag, AccJerkMag, GyroJerkMag
+##FeatureAxial			eg. X,Y,Z,""
+##AverageMean			The Mean Value of a Feature in the specific Domain, Axial and Measure.
+##AverageStandardDeviation		The Standard Deviation of a Feature in the specific Domain, Axial and Measure.
 
-str(TidyData)
-'data.frame':	5940 obs. of  9 variables:
+##str(TidyData)
+##'data.frame':	5940 obs. of  9 variables:
  $ SubjectId               : int  1 1 1 1 1 1 1 1 1 1 ...
  $ ActivityId              : int  1 1 1 1 1 1 1 1 1 1 ...
  $ ActivityLabel           : Factor w/ 6 levels "LAYING","SITTING",..: 4 4 4 4 4 4 4 4 4 4 ...
